@@ -1,1 +1,3 @@
 pygeohash
+pandas
+numpy

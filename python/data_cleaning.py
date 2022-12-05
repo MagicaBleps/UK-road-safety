@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def delete_columns(df):
-    columns_to_delete=['accident_reference',
+    columns_to_delete=['accident_reference', 'accident_index',
                        'location_easting_osgr','location_northing_osgr',
                        'police_force','local_authority_district',
                        'local_authority_ons_district','local_authority_highway',
@@ -18,4 +18,10 @@ def delete_columns(df):
                        'did_police_officer_attend_scene_of_accident',
                        'trunk_road_flag','lsoa_of_accident_location']
     df_new=df.drop(columns_to_delete,axis=1)
+    return df_new
+
+def fix_missing_values(df):
+    #dropping rows without lat and lon
+    df_new=df.dropna(axis=0,subset=['longitude','latitude'])
+
     return df_new

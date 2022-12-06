@@ -1,5 +1,5 @@
 import pandas as pd
-from python.add_geohash import add_geohash
+from python.Add_geohash import add_geohash
 
 
 def delete_columns(df):

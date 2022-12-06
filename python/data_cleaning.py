@@ -18,7 +18,7 @@ def delete_columns(df):
                        'carriageway_hazards', 'urban_or_rural_area',
                        'did_police_officer_attend_scene_of_accident',
                        'trunk_road_flag','lsoa_of_accident_location',
-                       'latitude','longitude','date','month','time']
+                       'time','date']
     df_new=df.drop(columns_to_delete,axis=1)
     return df_new
 

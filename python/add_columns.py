@@ -1,7 +1,7 @@
 import pandas as pd
 
 def add_time_columns(df):
-    df["date"] = pd.to_datetime(df["date"])
+    df["date"] = pd.to_datetime(df["date"],format='%d/%m/%Y')
     df["IsWeekend"] = df['date'].dt.weekday > 5
     df['month'] = df['date'].dt.month
     df['Daytime'] = df['time'].apply(lambda x: "morning rush (5-10)" if '05:00' < x <= '10:00'

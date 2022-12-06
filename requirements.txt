@@ -1,3 +1,5 @@
 pygeohash
 pandas
 numpy
+matplotlib
+seaborn

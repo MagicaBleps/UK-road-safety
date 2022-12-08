@@ -1,5 +1,5 @@
 #These functions are almost complete. I just need to touch up on some of the functionality and features. I plan to combine this along, with a few more functions to create a fully customizable data analysis interactive board.
-def select_year(start_year,path="../raw_data/Clean_data_1999-2021",stop_year=0):
+def select_year(start_year,path="../Clean_data_1999-2021",stop_year=0):
     """
     start_year: The first scope of the data you would like to access
     path: The path to the dataset
@@ -29,23 +29,28 @@ def basic_info(data):
     fig.tight_layout();
     fig.show();
 
-def map_plot(small_data):
+def map_plot(small_data,column='day_of_week'):
     """
     Returns a geographical map view of accident, locations and the date of the week they took place
     """
     import plotly.express as px
     import pandas as pd
+    import numpy as np
 
     df = small_data
-
-    color_scale = [(0.0,'red'), (0.167,'orange'), (0.33,'yellow'), (0.5,'green'), (0.67,'blue'), (0.83,'pink'), (1.0,'black')]
+    num = len(df[column].unique())
+    colors = ['red', 'green', 'orange', 'yellow','pink', 'blue','black']
+    values = list(np.linspace(0,1,num))
+    color_scale = []
+    for i in range(num):
+        color_scale.append((values[i],colors[i]))
 
     fig = px.scatter_mapbox(df,
                             lat="latitude",
                             lon="longitude",
                             #hover_name="Address",
                             #hover_data=["Address", "Listed"],
-                            color="day_of_week",
+                            color=column,
                             color_continuous_scale=color_scale,
                             #size="accident_severity",
                             zoom=8,

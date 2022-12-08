@@ -98,6 +98,7 @@ def init_model(X_train):
     #normalizer = Normalization()
     #normalizer.adapt(X_train)
 
+    #reg_l1_l2 = regularizers.l1_l2(l1=0.005, l2=0.005)
     # 1 - RNN architecture
     model = models.Sequential()
     ## 1.0 - All the rows will be standardized through the already adapted normalization layer

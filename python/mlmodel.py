@@ -98,8 +98,6 @@ def init_model(X_train):
     #normalizer = Normalization()
     #normalizer.adapt(X_train)
 
-    reg_l2 = regularizers.L2(0.01)
-
     # 1 - RNN architecture
     model = models.Sequential()
     ## 1.0 - All the rows will be standardized through the already adapted normalization layer
@@ -116,15 +114,15 @@ def init_model(X_train):
                         recurrent_dropout = 0.3
                         ))
     ## 1.2 - Predictive Dense Layers
-    model.add(layers.Dense(10, activation='relu',activity_regularizer=reg_l2))
+    model.add(layers.Dense(20, activation='relu'))
     model.add(layers.Dropout(rate=0.2))
-    model.add(layers.Dense(5, activation='relu',activity_regularizer=reg_l2))
+    model.add(layers.Dense(10, activation='relu'))
     model.add(layers.Dropout(rate=0.2))
     model.add(layers.Dense(1, activation='linear'))
 
     # 2 - Compiler
     # ======================
-    adam = optimizers.Adam(learning_rate=0.001)
+    adam = optimizers.Adam(learning_rate=0.1)
     model.compile(loss='mse', optimizer=adam, metrics=["mae"])
 
     return model
@@ -132,7 +130,7 @@ def init_model(X_train):
 def fit_model(model, X_train, y_train, verbose=1):
 
     es = EarlyStopping(monitor = "val_loss",
-                      patience = 50,
+                      patience = 20,
                       mode = "min",
                       restore_best_weights = True)
 
@@ -187,7 +185,7 @@ def cross_validate_baseline_and_lstm(df, fold_length, fold_stride,
         # =========================================
 
         ##### Baseline Model
-        baseline_model = init_baseline()
+        baseline_model = init_baseline(output_length)
         mae_baseline = baseline_model.evaluate(X_test, y_test, verbose=0)[1]
         list_of_mae_baseline_model.append(mae_baseline)
         print("-"*50)

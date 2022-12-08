@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from tensorflow.keras import models
 from tensorflow.keras import layers
 from tensorflow.keras import optimizers
@@ -214,3 +215,18 @@ def cross_validate_baseline_and_lstm(df, fold_length, fold_stride,
         print(f"Improvement over baseline: {round((1 - (mae_lstm/mae_baseline))*100,2)} % \n")
 
     return list_of_mae_baseline_model, list_of_mae_recurrent_model
+
+def plot_predictions(y_test, y_pred, y_bas, n_of_sequences):
+    '''This function plots n_of_sequences plots displaying the original series and
+    the two predictions (from the model and form the baseline model)'''
+    plt.figure(figsize=(20, 20))
+    for id in range(0,n_of_sequences):
+        plt.subplot(7,4,id+1)
+        df_test=pd.DataFrame(y_test[id])
+        df_pred=pd.DataFrame(y_pred[id].astype(int))
+        df_bas=pd.DataFrame(y_bas[id])
+        plt.plot(df_test[0],c='black',label='test set')
+        plt.plot(df_pred[0],c='orange',label='lstm prediction')
+        plt.plot(df_bas[0],c='blue',label='baseline prediction')
+    plt.show()
+    return None

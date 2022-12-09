@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from tensorflow.keras import models
 from tensorflow.keras import layers
 from tensorflow.keras import optimizers
@@ -98,26 +99,27 @@ def init_model(X_train):
     #normalizer = Normalization()
     #normalizer.adapt(X_train)
 
+    #reg_l1_l2 = regularizers.l1_l2(l1=0.005, l2=0.005)
     # 1 - RNN architecture
     model = models.Sequential()
     ## 1.0 - All the rows will be standardized through the already adapted normalization layer
     #model.add(normalizer)
     ## 1.1 - Recurrent Layer
-    model.add(layers.LSTM(60,
+    model.add(layers.LSTM(120,
                           activation='tanh',
                           return_sequences = True,
                           recurrent_dropout = 0.3,
                           input_shape=X_train[0].shape))
-    model.add(layers.LSTM(20,
-                        activation='tanh',
-                        return_sequences = True,
-                        recurrent_dropout = 0.3
-                        ))
+    # model.add(layers.LSTM(20,
+    #                     activation='tanh',
+    #                     return_sequences = True,
+    #                     recurrent_dropout = 0.3
+    #                     ))
     ## 1.2 - Predictive Dense Layers
     model.add(layers.Dense(20, activation='relu'))
-    model.add(layers.Dropout(rate=0.2))
+    model.add(layers.Dropout(rate=0.1))
     model.add(layers.Dense(10, activation='relu'))
-    model.add(layers.Dropout(rate=0.2))
+    model.add(layers.Dropout(rate=0.1))
     model.add(layers.Dense(1, activation='linear'))
 
     # 2 - Compiler
@@ -127,10 +129,37 @@ def init_model(X_train):
 
     return model
 
+def init_simple_model(X_train):
+
+    # 0 - Normalization
+    #normalizer = Normalization()
+    #normalizer.adapt(X_train)
+
+    #reg_l1_l2 = regularizers.l1_l2(l1=0.005, l2=0.005)
+    # 1 - RNN architecture
+    model = models.Sequential()
+    ## 1.0 - All the rows will be standardized through the already adapted normalization layer
+    #model.add(normalizer)
+    ## 1.1 - Recurrent Layer
+    model.add(layers.SimpleRNN(64,
+                          activation='tanh',
+                          return_sequences = True,
+                          #recurrent_dropout = 0.3,
+                          input_shape=X_train[0].shape))
+    ## 1.2 - Predictive Dense Layers
+    model.add(layers.Dense(1, activation='linear'))
+
+    # 2 - Compiler
+    # ======================
+    adam = optimizers.Adam(learning_rate=0.001)
+    model.compile(loss='mse', optimizer=adam, metrics=["mae"])
+
+    return model
+
 def fit_model(model, X_train, y_train, verbose=1):
 
     es = EarlyStopping(monitor = "val_loss",
-                      patience = 20,
+                      patience = 10,
                       mode = "min",
                       restore_best_weights = True)
 
@@ -139,7 +168,7 @@ def fit_model(model, X_train, y_train, verbose=1):
                         validation_split = 0.3,
                         shuffle = False,
                         batch_size = 32,
-                        epochs = 500,
+                        epochs = 100,
                         callbacks = [es],
                         verbose = verbose)
 
@@ -213,3 +242,18 @@ def cross_validate_baseline_and_lstm(df, fold_length, fold_stride,
         print(f"Improvement over baseline: {round((1 - (mae_lstm/mae_baseline))*100,2)} % \n")
 
     return list_of_mae_baseline_model, list_of_mae_recurrent_model
+
+def plot_predictions(y_test, y_pred, y_bas, n_of_sequences):
+    '''This function plots n_of_sequences plots displaying the original series and
+    the two predictions (from the model and form the baseline model)'''
+    plt.figure(figsize=(20, 20))
+    for id in range(0,n_of_sequences):
+        plt.subplot(7,4,id+1)
+        df_test=pd.DataFrame(y_test[id])
+        df_pred=pd.DataFrame(y_pred[id].astype(int))
+        df_bas=pd.DataFrame(y_bas[id])
+        plt.plot(df_test[0],c='black',label='test set')
+        plt.plot(df_pred[0],c='orange',label='lstm prediction')
+        plt.plot(df_bas[0],c='blue',label='baseline prediction')
+    plt.show()
+    return None

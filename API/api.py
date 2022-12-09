@@ -19,13 +19,13 @@ app.add_middleware(
 
 @app.get("/predict")
 def predict():
-    model = tf.keras.models.load_model('model/gcpvj0')
-    X_test = np.load('raw_data/data/X_test.npy')
-    y_pred = model.predict(X_test)
-    return (y_pred[-1,:,:].tolist())
-
-
-
+    model = tf.keras.models.load_model('API/model/gcpvj0')
+    X = np.load('API/data/X_gcpvj0.npy')
+    y_pred = np.round(np.array(model.predict([X]))).reshape(10,1)
+    predictions={}
+    for i,p in enumerate(y_pred):
+        predictions[f'Week {i+1}:']=int(p[0])
+    return predictions
 
 
 @app.get("/")

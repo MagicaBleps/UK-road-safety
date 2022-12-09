@@ -18,9 +18,9 @@ app.add_middleware(
 )
 
 @app.get("/predict")
-def predict():
-    model = tf.keras.models.load_model('API/model/gcpvj0')
-    X = np.load('API/data/X_gcpvj0.npy')
+def predict(hash):
+    model = tf.keras.models.load_model(f'API/model/{hash}')
+    X = np.load(f'API/data/X_{hash}.npy')
     y_pred = np.round(np.array(model.predict([X]))).reshape(10,1)
     predictions={}
     for i,p in enumerate(y_pred):

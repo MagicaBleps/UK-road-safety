@@ -4,7 +4,7 @@ import pygeohash as gh
 
 
 def delete_columns(df):
-    columns_to_delete=['accident_reference', 'accident_index',
+    columns_to_delete=['Unnamed: 0','accident_reference', 'accident_index',
                        'location_easting_osgr','location_northing_osgr',
                        'police_force','local_authority_district',
                        'local_authority_ons_district','local_authority_highway',

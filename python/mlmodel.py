@@ -129,7 +129,7 @@ def init_model(X_train):
 
     return model
 
-def init_simple_model(X_train):
+def init_simple_model():
 
     # 0 - Normalization
     #normalizer = Normalization()
@@ -143,7 +143,7 @@ def init_simple_model(X_train):
     ## 1.1 - Recurrent Layer
     model.add(layers.SimpleRNN(64,
                           activation='tanh',
-                          return_sequences = True,
+                          return_sequences = False,
                           #recurrent_dropout = 0.3,
                           input_shape=X_train[0].shape))
     ## 1.2 - Predictive Dense Layers
@@ -243,14 +243,14 @@ def cross_validate_baseline_and_lstm(df, fold_length, fold_stride,
 
     return list_of_mae_baseline_model, list_of_mae_recurrent_model
 
-def plot_predictions(y_test, y_pred, y_bas, n_of_sequences):
+def plot_predictions(y_test, y_pred, y_bas):
     '''This function plots n_of_sequences plots displaying the original series and
     the two predictions (from the model and form the baseline model)'''
     plt.figure(figsize=(20, 20))
-    for id in range(0,n_of_sequences):
+    for id in range(0,20):
         plt.subplot(7,4,id+1)
         df_test=pd.DataFrame(y_test[id])
-        df_pred=pd.DataFrame(y_pred[id].astype(int))
+        df_pred=pd.DataFrame(np.round(y_pred[id]))
         df_bas=pd.DataFrame(y_bas[id])
         plt.plot(df_test[0],c='black',label='test set')
         plt.plot(df_pred[0],c='orange',label='lstm prediction')

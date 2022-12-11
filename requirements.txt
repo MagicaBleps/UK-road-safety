@@ -4,6 +4,7 @@ numpy
 matplotlib
 seaborn
 tensorflow
+scikit-learn
 
 # API
 fastapi         # API framework

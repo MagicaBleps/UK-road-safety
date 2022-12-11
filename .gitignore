@@ -1,1 +1,6 @@
 raw_data/
+uk_road_safety/API/__pycache__
+uk_road_safety/python/__pycache__
+notebooks/test.ipynb
+notebooks/Elonora_2_features.ipynb
+notebooks/Eleonora_arima.ipynb

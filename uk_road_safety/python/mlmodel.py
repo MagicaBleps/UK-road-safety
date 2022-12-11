@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import models
 from tensorflow.keras import layers
 from tensorflow.keras import optimizers
@@ -203,37 +204,52 @@ def cross_validate_baseline_and_lstm(df, fold_length, fold_stride,
 
     for fold_id, fold in enumerate(folds):
 
-        # 1 - Train/Test split the current fold
+        # 1 - Train/Test split the current fold + normalize
         # =========================================
         (fold_train, fold_test) = train_test_split(fold, train_test_ratio, input_length)
+        columns=fold_train.columns
+        scaler=MinMaxScaler()
+        fold_train=pd.DataFrame(scaler.fit_transform(fold_train),columns=columns)
+        fold_test=pd.DataFrame(scaler.transform(fold_test),columns=columns)
 
-        X_train, y_train = get_X_y_strides(fold_train, input_length, output_length, sequence_stride)
-        X_test, y_test = get_X_y_strides(fold_test, input_length, output_length, sequence_stride)
+        X_train_scaled, y_train_scaled = get_X_y_strides(fold_train, input_length, output_length, sequence_stride)
+        X_test_scaled, y_test_scaled = get_X_y_strides(fold_test, input_length, output_length, sequence_stride)
+
+        y_train=y_train_scaled
+        y_test=y_test_scaled
+
+        for i,y in enumerate(y_train_scaled):
+            y_train[i]=(scaler.inverse_transform(y))
+        for i,y in enumerate(y_test_scaled):
+            y_test[i]=(scaler.inverse_transform(y))
+
+        y_test=y_test.astype(int)
+        y_train=y_train.astype(int)
 
         # 2 - Modelling
         # =========================================
 
         ##### Baseline Model
         baseline_model = init_baseline(output_length)
-        mae_baseline = baseline_model.evaluate(X_test, y_test, verbose=0)[1]
+        mae_baseline = baseline_model.evaluate(X_test_scaled, y_test, verbose=0)[1]
         list_of_mae_baseline_model.append(mae_baseline)
         print("-"*50)
         print(f"MAE baseline fold n°{fold_id} = {round(mae_baseline, 2)}")
 
         ##### LSTM Model
-        model = init_model(X_train)
+        model = init_model(X_train_scaled)
         es = EarlyStopping(monitor = "val_mae",
                            mode = "min",
                            patience = 2,
                            restore_best_weights = True)
-        history = model.fit(X_train, y_train,
+        history = model.fit(X_train_scaled, y_train,
                             validation_split = 0.3,
                             shuffle = False,
                             batch_size = 32,
                             epochs = 50,
                             callbacks = [es],
                             verbose = 0)
-        res = model.evaluate(X_test, y_test, verbose=0)
+        res = model.evaluate(X_test_scaled, y_test, verbose=0)
         mae_lstm = res[1]
         list_of_mae_recurrent_model.append(mae_lstm)
         print(f"MAE LSTM fold n°{fold_id} = {round(mae_lstm, 2)}")

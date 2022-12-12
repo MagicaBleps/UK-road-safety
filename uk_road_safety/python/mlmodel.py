@@ -118,14 +118,14 @@ def init_model(X_train):
     #                     ))
     ## 1.2 - Predictive Dense Layers
     model.add(layers.Dense(20, activation='relu'))
-    model.add(layers.Dropout(rate=0.1))
+    model.add(layers.Dropout(rate=0.3))
     model.add(layers.Dense(10, activation='relu'))
-    model.add(layers.Dropout(rate=0.1))
+    model.add(layers.Dropout(rate=0.3))
     model.add(layers.Dense(1, activation='linear'))
 
     # 2 - Compiler
     # ======================
-    adam = optimizers.Adam(learning_rate=0.1)
+    adam = optimizers.Adam(learning_rate=0.001)
     model.compile(loss='mse', optimizer=adam, metrics=["mae"])
 
     return model
@@ -168,8 +168,8 @@ def fit_model(model, X_train, y_train, verbose=1):
     history = model.fit(X_train, y_train,
                         validation_split = 0.3,
                         shuffle = False,
-                        batch_size = 32,
-                        epochs = 100,
+                        batch_size = 16,
+                        epochs = 500,
                         callbacks = [es],
                         verbose = verbose)
 
@@ -262,14 +262,14 @@ def cross_validate_baseline_and_lstm(df, fold_length, fold_stride,
 def plot_predictions(y_test, y_pred, y_bas):
     '''This function plots n_of_sequences plots displaying the original series and
     the two predictions (from the model and form the baseline model)'''
-    plt.figure(figsize=(20, 20))
-    for id in range(0,20):
-        plt.subplot(7,4,id+1)
+    plt.figure(figsize=(10, 5))
+    for i,id in enumerate([0,10]):
+        plt.subplot(1,2,i+1)
         df_test=pd.DataFrame(y_test[id])
         df_pred=pd.DataFrame(y_pred[id].astype(int))
         df_bas=pd.DataFrame(y_bas[id])
-        plt.plot(df_test[0],c='black',label='test set')
-        plt.plot(df_pred[0],c='orange',label='lstm prediction')
-        plt.plot(df_bas[0],c='blue',label='baseline prediction')
+        plt.plot(df_test.values,c='black',label='test set')
+        plt.plot(df_pred.values,c='orange',label='lstm prediction')
+        plt.plot(df_bas.values,c='blue',label='baseline prediction')
     plt.show()
     return None

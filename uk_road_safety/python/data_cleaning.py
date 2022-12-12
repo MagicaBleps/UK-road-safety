@@ -4,7 +4,7 @@ import pygeohash as gh
 
 
 def delete_columns(df):
-    columns_to_delete=['Unnamed: 0','accident_reference', 'accident_index',
+    columns_to_delete=['accident_reference', 'accident_index',
                        'location_easting_osgr','location_northing_osgr',
                        'police_force','local_authority_district',
                        'local_authority_ons_district','local_authority_highway',
@@ -50,5 +50,15 @@ def prepare_data_for_groupby(df,precision):
     df_new=fix_missing_values(df_new)
     df_new=add_time_columns(df_new)
     df_new=add_geohash(df_new,p=precision)
+
+    return df_new
+
+
+def prepare_data(df):
+    '''The function takes the list of accidents in time and prepares it for the groupby step.
+    The precision parameter is used for the geohash step.'''
+    df_new=delete_columns(df)
+    df_new=fix_missing_values(df_new)
+    df_new=add_time_columns(df_new)
 
     return df_new

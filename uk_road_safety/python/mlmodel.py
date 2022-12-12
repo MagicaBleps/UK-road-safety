@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import models
 from tensorflow.keras import layers
 from tensorflow.keras import optimizers
@@ -117,19 +118,19 @@ def init_model(X_train):
     #                     ))
     ## 1.2 - Predictive Dense Layers
     model.add(layers.Dense(20, activation='relu'))
-    model.add(layers.Dropout(rate=0.1))
+    model.add(layers.Dropout(rate=0.3))
     model.add(layers.Dense(10, activation='relu'))
-    model.add(layers.Dropout(rate=0.1))
+    model.add(layers.Dropout(rate=0.3))
     model.add(layers.Dense(1, activation='linear'))
 
     # 2 - Compiler
     # ======================
-    adam = optimizers.Adam(learning_rate=0.1)
+    adam = optimizers.Adam(learning_rate=0.001)
     model.compile(loss='mse', optimizer=adam, metrics=["mae"])
 
     return model
 
-def init_simple_model():
+def init_simple_model(X_train):
 
     # 0 - Normalization
     #normalizer = Normalization()
@@ -143,7 +144,7 @@ def init_simple_model():
     ## 1.1 - Recurrent Layer
     model.add(layers.SimpleRNN(64,
                           activation='tanh',
-                          return_sequences = False,
+                          return_sequences = True,
                           #recurrent_dropout = 0.3,
                           input_shape=X_train[0].shape))
     ## 1.2 - Predictive Dense Layers
@@ -167,8 +168,8 @@ def fit_model(model, X_train, y_train, verbose=1):
     history = model.fit(X_train, y_train,
                         validation_split = 0.3,
                         shuffle = False,
-                        batch_size = 32,
-                        epochs = 100,
+                        batch_size = 16,
+                        epochs = 500,
                         callbacks = [es],
                         verbose = verbose)
 
@@ -203,37 +204,52 @@ def cross_validate_baseline_and_lstm(df, fold_length, fold_stride,
 
     for fold_id, fold in enumerate(folds):
 
-        # 1 - Train/Test split the current fold
+        # 1 - Train/Test split the current fold + normalize
         # =========================================
         (fold_train, fold_test) = train_test_split(fold, train_test_ratio, input_length)
+        columns=fold_train.columns
+        scaler=MinMaxScaler()
+        fold_train=pd.DataFrame(scaler.fit_transform(fold_train),columns=columns)
+        fold_test=pd.DataFrame(scaler.transform(fold_test),columns=columns)
 
-        X_train, y_train = get_X_y_strides(fold_train, input_length, output_length, sequence_stride)
-        X_test, y_test = get_X_y_strides(fold_test, input_length, output_length, sequence_stride)
+        X_train_scaled, y_train_scaled = get_X_y_strides(fold_train, input_length, output_length, sequence_stride)
+        X_test_scaled, y_test_scaled = get_X_y_strides(fold_test, input_length, output_length, sequence_stride)
+
+        y_train=y_train_scaled
+        y_test=y_test_scaled
+
+        for i,y in enumerate(y_train_scaled):
+            y_train[i]=(scaler.inverse_transform(y))
+        for i,y in enumerate(y_test_scaled):
+            y_test[i]=(scaler.inverse_transform(y))
+
+        y_test=y_test.astype(int)
+        y_train=y_train.astype(int)
 
         # 2 - Modelling
         # =========================================
 
         ##### Baseline Model
         baseline_model = init_baseline(output_length)
-        mae_baseline = baseline_model.evaluate(X_test, y_test, verbose=0)[1]
+        mae_baseline = baseline_model.evaluate(X_test_scaled, y_test, verbose=0)[1]
         list_of_mae_baseline_model.append(mae_baseline)
         print("-"*50)
         print(f"MAE baseline fold n°{fold_id} = {round(mae_baseline, 2)}")
 
         ##### LSTM Model
-        model = init_model(X_train)
+        model = init_model(X_train_scaled)
         es = EarlyStopping(monitor = "val_mae",
                            mode = "min",
                            patience = 2,
                            restore_best_weights = True)
-        history = model.fit(X_train, y_train,
+        history = model.fit(X_train_scaled, y_train,
                             validation_split = 0.3,
                             shuffle = False,
                             batch_size = 32,
                             epochs = 50,
                             callbacks = [es],
                             verbose = 0)
-        res = model.evaluate(X_test, y_test, verbose=0)
+        res = model.evaluate(X_test_scaled, y_test, verbose=0)
         mae_lstm = res[1]
         list_of_mae_recurrent_model.append(mae_lstm)
         print(f"MAE LSTM fold n°{fold_id} = {round(mae_lstm, 2)}")
@@ -246,14 +262,14 @@ def cross_validate_baseline_and_lstm(df, fold_length, fold_stride,
 def plot_predictions(y_test, y_pred, y_bas):
     '''This function plots n_of_sequences plots displaying the original series and
     the two predictions (from the model and form the baseline model)'''
-    plt.figure(figsize=(20, 20))
-    for id in range(0,20):
-        plt.subplot(7,4,id+1)
+    plt.figure(figsize=(10, 5))
+    for i,id in enumerate([0,10]):
+        plt.subplot(1,2,i+1)
         df_test=pd.DataFrame(y_test[id])
-        df_pred=pd.DataFrame(np.round(y_pred[id]))
+        df_pred=pd.DataFrame(y_pred[id].astype(int))
         df_bas=pd.DataFrame(y_bas[id])
-        plt.plot(df_test[0],c='black',label='test set')
-        plt.plot(df_pred[0],c='orange',label='lstm prediction')
-        plt.plot(df_bas[0],c='blue',label='baseline prediction')
+        plt.plot(df_test.values,c='black',label='test set')
+        plt.plot(df_pred.values,c='orange',label='lstm prediction')
+        plt.plot(df_bas.values,c='blue',label='baseline prediction')
     plt.show()
     return None

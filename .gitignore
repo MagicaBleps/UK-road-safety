@@ -5,3 +5,8 @@ uk_road_safety/python/__pycache__
 .python-version
 uk_road_safety/data/
 uk_road_safety/model/
+*.csv
+*.DS_Store
+*.json
+*.egg-info
+

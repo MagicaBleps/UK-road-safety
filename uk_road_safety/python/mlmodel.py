@@ -106,7 +106,7 @@ def init_model(X_train):
     ## 1.0 - All the rows will be standardized through the already adapted normalization layer
     #model.add(normalizer)
     ## 1.1 - Recurrent Layer
-    model.add(layers.LSTM(120,
+    model.add(layers.LSTM(30,
                           activation='tanh',
                           return_sequences = True,
                           recurrent_dropout = 0.3,

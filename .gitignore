@@ -1,3 +1,4 @@
 raw_data/
 uk_road_safety/API/__pycache__
 uk_road_safety/python/__pycache__
+.env

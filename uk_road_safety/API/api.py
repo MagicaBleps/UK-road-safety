@@ -19,8 +19,8 @@ app.add_middleware(
 
 @app.get("/predict")
 def predict(hash):
-    model = tf.keras.models.load_model(f'uk_road_safety/model/{hash}')
-    X = np.load(f'uk_road_safety/data/X_{hash}.npy')
+    model = tf.keras.models.load_model(f'model/{hash}')
+    X = np.load(f'data/X_{hash}.npy')
     y_pred = np.round(np.array(model.predict(X))).reshape(10,1)
     predictions={}
     for i,p in enumerate(y_pred):

@@ -94,6 +94,42 @@ def plot_history(history):
 
     return ax
 
+def init_model_gcpvhc(X_train):
+
+    # 0 - Normalization
+    #normalizer = Normalization()
+    #normalizer.adapt(X_train)
+
+    #reg_l1_l2 = regularizers.l1_l2(l1=0.005, l2=0.005)
+    # 1 - RNN architecture
+    model = models.Sequential()
+    ## 1.0 - All the rows will be standardized through the already adapted normalization layer
+    #model.add(normalizer)
+    ## 1.1 - Recurrent Layer
+    model.add(layers.LSTM(30,
+                          activation='tanh',
+                          return_sequences = True,
+                          recurrent_dropout = 0.3,
+                          input_shape=X_train[0].shape))
+    # model.add(layers.LSTM(20,
+    #                     activation='tanh',
+    #                     return_sequences = True,
+    #                     recurrent_dropout = 0.3
+    #                     ))
+    ## 1.2 - Predictive Dense Layers
+    model.add(layers.Dense(20, activation='relu'))
+    model.add(layers.Dropout(rate=0.3))
+    model.add(layers.Dense(10, activation='relu'))
+    model.add(layers.Dropout(rate=0.3))
+    model.add(layers.Dense(1, activation='linear'))
+
+    # 2 - Compiler
+    # ======================
+    adam = optimizers.Adam(learning_rate=0.001)
+    model.compile(loss='mse', optimizer=adam, metrics=["mae"])
+
+    return model
+
 def init_model(X_train):
 
     # 0 - Normalization
@@ -130,32 +166,6 @@ def init_model(X_train):
 
     return model
 
-def init_simple_model(X_train):
-
-    # 0 - Normalization
-    #normalizer = Normalization()
-    #normalizer.adapt(X_train)
-
-    #reg_l1_l2 = regularizers.l1_l2(l1=0.005, l2=0.005)
-    # 1 - RNN architecture
-    model = models.Sequential()
-    ## 1.0 - All the rows will be standardized through the already adapted normalization layer
-    #model.add(normalizer)
-    ## 1.1 - Recurrent Layer
-    model.add(layers.SimpleRNN(64,
-                          activation='tanh',
-                          return_sequences = True,
-                          #recurrent_dropout = 0.3,
-                          input_shape=X_train[0].shape))
-    ## 1.2 - Predictive Dense Layers
-    model.add(layers.Dense(1, activation='linear'))
-
-    # 2 - Compiler
-    # ======================
-    adam = optimizers.Adam(learning_rate=0.001)
-    model.compile(loss='mse', optimizer=adam, metrics=["mae"])
-
-    return model
 
 def fit_model(model, X_train, y_train, verbose=1):
 

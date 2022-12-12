@@ -8,3 +8,8 @@ model/
 *.DS_Store
 *.json
 *.egg-info
+notebooks/Eleonora_geohash_models_gcpuv2.ipynb
+notebooks/Eleonora_geohash_models_gcpvhc.ipynb
+notebooks/Eleonora_geohash_models_gcpvj1.ipynb
+notebooks/Eleonora_geohash_models_gcpvj4.ipynb
+notebooks/Elonora_2_features.ipynb

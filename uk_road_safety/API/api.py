@@ -23,9 +23,9 @@ def predict(hash):
     X = np.load(f'data/X_{hash}.npy')
     y_pred = np.round(np.array(model.predict(X))).reshape(10,1)
     predictions={}
+    months={0:'January',1:'February',2:'March',3:'April',4:'May',5:'June'}
     for i,p in enumerate(y_pred):
-         predictions[f'Week {i+1}:']=int(p[0])
-    return predictions
+        predictions[months[i]]=int(p[0])
 
 
 @app.get("/")

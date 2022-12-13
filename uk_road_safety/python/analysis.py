@@ -26,7 +26,7 @@ def basic_info(data):
     #sns.countplot(data['day_of_week'], ax= axes[0][0])
     #sns.countplot(data['day_of_week'], ax= axes[0][0])
     fig.suptitle("Basic Information about accident occurrence")
-    fig.tight_layout();
+    fig.tight_layout()
     fig.show();
 
 def map_plot(small_data,column='day_of_week'):

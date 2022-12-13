@@ -1,4 +1,5 @@
-FROM python:3.10.6-buster
+#FROM python:3.10.6-slim
+FROM tensorflow/tensorflow:2.11.0
 COPY . .
 RUN pip install --upgrade pip
 RUN pip install .

@@ -22,6 +22,10 @@ def predict(hash):
     model = tf.keras.models.load_model(f'model/{hash}')
     X = np.load(f'data/X_{hash}.npy')
     y_pred = np.round(np.array(model.predict(X))).reshape(6,1)
+    predictions={}
+    months={0:'1_January',1:'2_February',2:'3_March',3:'4_April',4:'5_May',5:'6_June'}
+    for i,p in enumerate(y_pred):
+        predictions[months[i]]=int(p[0])
     print(y_pred)
     predictions={}
     months={0:'January',1:'February',2:'March',3:'April',4:'May',5:'June'}

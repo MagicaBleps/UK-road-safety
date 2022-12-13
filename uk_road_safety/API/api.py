@@ -19,12 +19,13 @@ app.add_middleware(
 
 @app.get("/predict")
 def predict(hash):
-    model = tf.keras.models.load_model(f'uk_road_safety/model/{hash}')
-    X = np.load(f'uk_road_safety/data/X_{hash}.npy')
-    y_pred = np.round(np.array(model.predict(X))).reshape(10,1)
+    model = tf.keras.models.load_model(f'model/{hash}')
+    X = np.load(f'data/X_{hash}.npy')
+    y_pred = np.round(np.array(model.predict(X))).reshape(6,1)
+    months={0:'January',1:'February',2:'March',3:'April',4:'May',5:'June'}
     predictions={}
     for i,p in enumerate(y_pred):
-         predictions[f'Week {i+1}:']=int(p[0])
+        predictions[months[i]]=int(p[0])
     return predictions
 
 

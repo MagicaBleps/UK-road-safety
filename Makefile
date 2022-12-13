@@ -1,2 +1,2 @@
 run_api:
-	uvicorn API.api:app --reload
+	uvicorn uk_road_safety.API.api:app --reload

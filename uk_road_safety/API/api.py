@@ -7,8 +7,8 @@ import tensorflow as tf
 import json
 
 
-from fastapi.responses import HTMLResponse
 
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -32,6 +32,7 @@ def predict(hash):
     for i,p in enumerate(y_pred):
         predictions[months[i]]=int(p)
     return predictions
+
 
 
 @app.get("/show_map")

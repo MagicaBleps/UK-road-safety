@@ -7,7 +7,7 @@ requirements = [x.strip() for x in content if "git+" not in x]
 
 setup(name='uk_road_safety',
       version="0.0.1",
-      description="UK road safety Model (api_pred).",
+      description="UK road safety Model (api_pred)",
       install_requires=requirements,
       packages=find_packages(),
       test_suite="tests",

@@ -3,7 +3,7 @@ pandas
 numpy
 matplotlib
 seaborn
-tensorflow
+#tensorflow
 
 # API
 fastapi         # API framework

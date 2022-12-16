@@ -31,7 +31,7 @@ def predict(hash):
 
 @app.get("/show_map")
 def show_map(year):
-    filename= 'map/'+str(year)+'.html'
+    filename= 'maps/'+str(year)+'.html'
     with open(filename, "r", encoding='utf-8') as f:
         html_content=f.read()
     return HTMLResponse(content=html_content, status_code=200)

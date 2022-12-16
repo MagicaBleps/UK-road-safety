@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 import json
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -27,6 +28,13 @@ def predict(hash):
     for i,p in enumerate(y_pred):
         predictions[months[i]]=int(p[0])
     return predictions
+
+@app.get("/show_map")
+def show_map(year):
+    filename= 'map/'+str(year)+'.html'
+    with open(filename, "r", encoding='utf-8') as f:
+        html_content=f.read()
+    return HTMLResponse(content=html_content, status_code=200)
 
 @app.get("/")
 def root():

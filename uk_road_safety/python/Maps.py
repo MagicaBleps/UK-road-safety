@@ -1,7 +1,7 @@
 import pygeohash as gh
 import pandas as pd
 import folium
-import geohash
+#import Geohash
 from folium.plugins import HeatMapWithTime
 from folium.plugins import MarkerCluster, HeatMap
 from folium import Marker, Circle, CircleMarker, Choropleth
@@ -44,9 +44,9 @@ def visualize_data_gh():
 
     for gh in geohash_list:
 
-        lat, long = geohash.decode(gh)
+        lat, long = gh.decode(gh)
 
-        decoded = geohash.bbox(gh) # decode the geohash
+        decoded = gh.bbox(gh) # decode the geohash
 
         W = decoded["w"]
         E = decoded["e"]

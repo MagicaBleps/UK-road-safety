@@ -1,9 +1,10 @@
 import pandas as pd
-
 import pygeohash as gh
 
 
 def delete_columns(df):
+    ''' Deletes unnecessary columns'''
+
     columns_to_delete=['accident_reference', 'accident_index',
                        'location_easting_osgr','location_northing_osgr',
                        'police_force','local_authority_district',
@@ -23,16 +24,18 @@ def delete_columns(df):
     return df_new
 
 def fix_missing_values(df):
-    #dropping rows without lat and lon
+    '''Drops rows without lat and lon'''
     df_new=df.dropna(axis=0,subset=['longitude','latitude'])
 
     return df_new
 
 def add_geohash(df,p=5):
+    '''Adds to each row the geohash corresponding to the lat and lon coordinates'''
     df['geohash']=df.apply(lambda x: gh.encode(x.latitude, x.longitude, precision=p), axis=1)
     return df
 
 def add_time_columns(df):
+    '''Adjusts the date to datetime format and adds some time-related features'''
     df["date"] = pd.to_datetime(df["date"],format='%d/%m/%Y')
     df["IsWeekend"] = df['date'].dt.weekday > 5
     df['month'] = df['date'].dt.month
@@ -53,12 +56,3 @@ def prepare_data_for_groupby(df,precision):
 
     return df_new
 
-
-def prepare_data(df):
-    '''The function takes the list of accidents in time and prepares it for the groupby step.
-    The precision parameter is used for the geohash step.'''
-    df_new=delete_columns(df)
-    df_new=fix_missing_values(df_new)
-    df_new=add_time_columns(df_new)
-
-    return df_new

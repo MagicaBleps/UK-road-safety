@@ -108,7 +108,7 @@ def init_model(X_train):
     ## 1.1 - Recurrent Layer
     model.add(layers.LSTM(30,
                           activation='tanh',
-                          return_sequences = False,
+                          return_sequences = True,
                           recurrent_dropout = 0.3,
                           input_shape=X_train[0].shape))
     # model.add(layers.LSTM(20,

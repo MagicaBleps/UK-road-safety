@@ -69,7 +69,7 @@ def get_X_y_strides(fold, input_length, output_length, sequence_stride):
     return np.array(X), np.array(y)
 
 def plot_history(history):
-
+    '''Visualize the training of the RNN over epochs. This function shows both the evolution of the loss function (MSE) and metrics (MAE).'''
     fig, ax = plt.subplots(1,2, figsize=(20,7))
     # --- LOSS: MSE ---
     ax[0].plot(history.history['loss'])
@@ -95,27 +95,16 @@ def plot_history(history):
     return ax
 
 def init_model(X_train):
-
-    # 0 - Normalization
-    #normalizer = Normalization()
-    #normalizer.adapt(X_train)
-
-    #reg_l1_l2 = regularizers.l1_l2(l1=0.005, l2=0.005)
+    '''Initialization of a RNN model'''
     # 1 - RNN architecture
     model = models.Sequential()
-    ## 1.0 - All the rows will be standardized through the already adapted normalization layer
-    #model.add(normalizer)
+
     ## 1.1 - Recurrent Layer
     model.add(layers.LSTM(30,
                           activation='tanh',
                           return_sequences = True,
                           recurrent_dropout = 0.3,
                           input_shape=X_train[0].shape))
-    # model.add(layers.LSTM(20,
-    #                     activation='tanh',
-    #                     return_sequences = True,
-    #                     recurrent_dropout = 0.3
-    #                     ))
     ## 1.2 - Predictive Dense Layers
     model.add(layers.Dense(20, activation='relu'))
     model.add(layers.Dropout(rate=0.3))
@@ -132,7 +121,7 @@ def init_model(X_train):
 
 
 def fit_model(model, X_train, y_train, verbose=1):
-
+    '''Training of the model over the train set'''
     es = EarlyStopping(monitor = "val_loss",
                       patience = 10,
                       mode = "min",
@@ -150,7 +139,7 @@ def fit_model(model, X_train, y_train, verbose=1):
     return model, history
 
 def init_baseline(output_length):
-
+    '''Creation of a baseline model, that outputs, as a prediction of the next sequence (y_i), the input sequence itself (X_i)'''
     model = models.Sequential()
     model.add(layers.Lambda(lambda x: x[:,-output_length:,0,None]))
 
@@ -164,7 +153,7 @@ def cross_validate_baseline_and_lstm(df, fold_length, fold_stride,
                                      output_length, sequence_stride):
     '''
     This function cross-validates
-    - the "last seen value" baseline model
+    - the "last seen sequence" baseline model
     - the RNN model
     '''
 
@@ -232,18 +221,3 @@ def cross_validate_baseline_and_lstm(df, fold_length, fold_stride,
         print(f"Improvement over baseline: {round((1 - (mae_lstm/mae_baseline))*100,2)} % \n")
 
     return list_of_mae_baseline_model, list_of_mae_recurrent_model
-
-def plot_predictions(y_test, y_pred, y_bas):
-    '''This function plots n_of_sequences plots displaying the original series and
-    the two predictions (from the model and form the baseline model)'''
-    plt.figure(figsize=(10, 5))
-    for i,id in enumerate([0,10]):
-        plt.subplot(1,2,i+1)
-        df_test=pd.DataFrame(y_test[id])
-        df_pred=pd.DataFrame(y_pred[id].astype(int))
-        df_bas=pd.DataFrame(y_bas[id])
-        plt.plot(df_test.values,c='black',label='test set')
-        plt.plot(df_pred.values,c='orange',label='lstm prediction')
-        plt.plot(df_bas.values,c='blue',label='baseline prediction')
-    plt.show()
-    return None

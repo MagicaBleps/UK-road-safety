@@ -20,6 +20,8 @@ app.add_middleware(
 
 @app.get("/predict")
 def predict(hash):
+    '''The function loads the accidents rate of the last 6 months of 2021 on the geohash given as argument, and the corresponding model.
+    A prediction is generated for the first 6 months of 2022 and returned as a dictionary compatible with the frontend used to call the API.'''
     model = tf.keras.models.load_model(f'model/{hash}')
     X = np.load(f'data/X_{hash}.npy')
     y_pred = np.round(np.array(model.predict(X))).reshape(6,1)
@@ -31,6 +33,8 @@ def predict(hash):
 
 @app.get("/show_map")
 def show_map(year):
+    '''The function loads the html version of the map displaying all accidents recorded on the argument year, each pinpointed using its GPS coordinates.
+    The htmls were generated using the maps.py function visualize_data_UK'''
     filename= 'map/'+str(year)+'.html'
     with open(filename, "r", encoding='utf-8') as f:
         html_content=f.read()
@@ -38,4 +42,5 @@ def show_map(year):
 
 @app.get("/")
 def root():
-   return {'greeting': 'Hello, We are team 6: UK road Safety'}
+    '''Sample text for API frontend landing page'''
+    return {'greeting': 'Hello, We are team 6: UK road Safety'}

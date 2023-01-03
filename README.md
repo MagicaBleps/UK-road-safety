@@ -52,7 +52,12 @@ This sub-folder contains all the custom modules we built:
 This sub-folder contains the python code we used to create the API we published.
 The API has two calls:
 - predict: it will predict the monthly accidents rate for the first 6 months of 2022 for a given geohash
-- show_map: it loads an html file containing a map of the UK with a pin point for every accident occurred in a given year, located on the accident's GPS coordinates
+- show_map: it loads an html file containing a map of the UK with a pin point for every accident occurred in a given year, located on the accident's GPS coordinates. The html maps are contained in the maps folder.
+
+## maps Folder
+
+This folder contains some HTML files, each of them containing a map of the UK and the pinpointed location of every accident recorded in a given year.
+
 ## Connections to Other Repositories
 
 The [frontend repository](https://github.com/MagicaBleps/uk-road-safety-frontend) contains all the frontend code we used for the web app we published to make the model publicly available (for a limited time).
@@ -63,5 +68,3 @@ The [frontend repository](https://github.com/MagicaBleps/uk-road-safety-frontend
 - [@Jigisha-p](https://www.github.com/Jigisha-p)
 - [@leochen888](https://www.github.com/leochen888)
 - [@Bolu-Adekanbi](https://www.github.com/Bolu-Adekanmbi)
-
-

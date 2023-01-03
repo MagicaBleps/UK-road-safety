@@ -33,8 +33,6 @@ def predict(hash):
 
 @app.get("/show_map")
 def show_map(year):
-    '''The function loads the html version of the map displaying all accidents recorded on the argument year, each pinpointed using its GPS coordinates.
-    The htmls were generated using the maps.py function visualize_data_UK'''
     filename= 'map/'+str(year)+'.html'
     with open(filename, "r", encoding='utf-8') as f:
         html_content=f.read()
